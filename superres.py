@@ -38,18 +38,6 @@ def get_dnn_superres(upscale_factor: int = 3):
     return sr
 
 
-def upscale_images(target_path):
-    images = os.listdir(target_path)
-
-    for image_name in images:
-        file_path = os.path.join(target_path, image_name)
-
-        if os.path.isdir(file_path):
-            continue
-
-        upscale_single_image(file_path)
-
-
 def upscale_single_image(image_path):
     img = cv2.imread(image_path)
     result = SR.upsample(img)

@@ -6,8 +6,10 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
+from rich.progress import track
+
 from colorizator import MangaColorizator
-from superres import upscale_images, upscale_single_image
+from superres import upscale_single_image
 
 
 def process_image(image, colorizator, args):
@@ -29,7 +31,7 @@ def colorize_single_image(image_path, save_path, colorizator, args):
 def colorize_images(target_path, colorizator, args):
     images = os.listdir(args.path)
 
-    for image_name in images:
+    for image_name in track(images, description="Colorizing images..."):
         file_path = os.path.join(args.path, image_name)
 
         if os.path.isdir(file_path):
@@ -39,10 +41,10 @@ def colorize_images(target_path, colorizator, args):
         if ext != ".png":
             image_name = name + ".png"
 
-        print(file_path)
-
         save_path = os.path.join(target_path, image_name)
         colorize_single_image(file_path, save_path, colorizator, args)
+        if args.upscale:
+            upscale_single_image(save_path)
 
 
 def parse_args():
@@ -78,8 +80,6 @@ if __name__ == "__main__":
             os.makedirs(colorization_path)
 
         colorize_images(colorization_path, colorizer, args)
-        if args.upscale:
-            upscale_images(colorization_path)
 
     elif os.path.isfile(args.path):
         split = os.path.splitext(args.path)
